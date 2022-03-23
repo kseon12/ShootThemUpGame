@@ -1,0 +1,18 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{D18BB2A3-4B4D-6D52-E049-5FB157C28F05}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ShootThemUpTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG",
+				"AIModule"
+			]
+		}
+	]
+}
