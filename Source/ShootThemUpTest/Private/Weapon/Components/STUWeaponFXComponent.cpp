@@ -1,6 +1,5 @@
 // I will find u. Copyrighted
 
-
 #include "Weapon/Components/STUWeaponFXComponent.h"
 
 #include "PhysicalMaterials/PhysicalMaterial.h"
@@ -18,37 +17,34 @@ USTUWeaponFXComponent::USTUWeaponFXComponent()
 	// ...
 }
 
-
 // Called when the game starts
 void USTUWeaponFXComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 void USTUWeaponFXComponent::PlayImpactFX(const FHitResult& Hit)
 {
-    auto ImpactData = DefaultImpactData;
+	auto ImpactData = DefaultImpactData;
 
-	if (Hit.PhysMaterial.IsValid())
-    {
-        const auto PhysMat = Hit.PhysMaterial.Get();
+	if(Hit.PhysMaterial.IsValid())
+	{
+		const auto PhysMat = Hit.PhysMaterial.Get();
 
-		if (ImpactDataMap.Contains(PhysMat))
-        {
-            ImpactData = ImpactDataMap[PhysMat];
-        }
-    }
+		if(ImpactDataMap.Contains(PhysMat))
+		{
+			ImpactData = ImpactDataMap[PhysMat];
+		}
+	}
 
-    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactData.NiagaraEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactData.NiagaraEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 
 	auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
-        GetWorld(), ImpactData.DecalData.Material, ImpactData.DecalData.Size, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-    if (DecalComponent)
-    {
-        DecalComponent->SetFadeOut(ImpactData.DecalData.LifeTime, ImpactData.DecalData.FadeOutTime);
-    }
+		GetWorld(), ImpactData.DecalData.Material, ImpactData.DecalData.Size, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	if(DecalComponent)
+	{
+		DecalComponent->SetFadeOut(ImpactData.DecalData.LifeTime, ImpactData.DecalData.FadeOutTime);
+	}
 }
-

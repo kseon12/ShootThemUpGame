@@ -13,7 +13,7 @@ UCLASS()
 class SHOOTTHEMUPTEST_API ASTUAICharacter : public ASTUBaseCharacter
 {
 	GENERATED_BODY()
-	
-		public:
-    ASTUAICharacter(const FObjectInitializer& ObjInit);
+
+public:
+	ASTUAICharacter(const FObjectInitializer& ObjInit);
 };

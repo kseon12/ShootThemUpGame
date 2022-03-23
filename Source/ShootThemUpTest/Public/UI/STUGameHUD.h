@@ -13,11 +13,11 @@ UCLASS()
 class SHOOTTHEMUPTEST_API ASTUGameHUD : public AHUD
 {
 	GENERATED_BODY()
-	
+
 public:
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
 
 	virtual void BeginPlay() override;
 };

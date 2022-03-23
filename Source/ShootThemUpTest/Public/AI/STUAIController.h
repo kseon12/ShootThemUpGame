@@ -13,5 +13,4 @@ UCLASS()
 class SHOOTTHEMUPTEST_API ASTUAIController : public AAIController
 {
 	GENERATED_BODY()
-	
 };

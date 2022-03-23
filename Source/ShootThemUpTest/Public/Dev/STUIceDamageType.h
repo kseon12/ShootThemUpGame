@@ -13,5 +13,4 @@ UCLASS()
 class SHOOTTHEMUPTEST_API USTUIceDamageType : public UDamageType
 {
 	GENERATED_BODY()
-	
 };

@@ -11,64 +11,63 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, float)
 
 class UCameraShakeBase;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHOOTTHEMUPTEST_API USTUHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	USTUHealthComponent();
 
 	float GetHealth() const { return Health; }
 
 	UFUNCTION(BlueprintCallable)
-    bool IsDead() const { return FMath::IsNearlyZero(Health); }
+	bool IsDead() const { return FMath::IsNearlyZero(Health); }
 
 	UFUNCTION(BlueprintCallable)
-    float GetHealthPercent() const;
+	float GetHealthPercent() const;
 
 	FOnDeath OnDeath;
-    FOnHealthChanged OnHealthChanged;
+	FOnHealthChanged OnHealthChanged;
 
 	bool TryToAddHealth(float HealthAmount);
-    bool IsHealthFull() const;
+	bool IsHealthFull() const;
 
- protected:
+protected:
 	// Called when the game starts
-	virtual void BeginPlay() override; 
+	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MaxHealth = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
-    bool bAutoHeal = false;
+	bool bAutoHeal = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
-    float AutoHealStartDelay = 3.0f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
-    float AutoHealUpdateTime = 0.1f;
+	float AutoHealStartDelay = 3.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
-    float AutoHealModifier = 0.1f;
+	float AutoHealUpdateTime = 0.1f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
+	float AutoHealModifier = 0.1f;
 
 	float TimeSinceLastDmg = 0.0f;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
-    TSubclassOf<UCameraShakeBase> CameraShake;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	TSubclassOf<UCameraShakeBase> CameraShake;
 
-private:	
-
+private:
 	float Health = 0.0f;
-    FTimerHandle AutoHealTimerHandle;
+	FTimerHandle AutoHealTimerHandle;
 
 	UFUNCTION()
-    void OnTakeAnyDamage(
-        AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	void OnTakeAnyDamage(
+		AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	void AutoHealUpdate();
-    void SetHealth(float Value);
+	void SetHealth(float Value);
 
 	void PlayCameraShake();
 };

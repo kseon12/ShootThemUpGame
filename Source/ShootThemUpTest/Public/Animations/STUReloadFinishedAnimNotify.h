@@ -13,5 +13,4 @@ UCLASS()
 class SHOOTTHEMUPTEST_API USTUReloadFinishedAnimNotify : public USTUAnimNotify
 {
 	GENERATED_BODY()
-	
 };

@@ -6,8 +6,6 @@
 #include "Animations/STUAnimNotify.h"
 #include "STUEquipFinishedAnimNotify.generated.h"
 
-
-
 /**
  * 
  */
@@ -17,5 +15,4 @@ class SHOOTTHEMUPTEST_API USTUEquipFinishedAnimNotify : public USTUAnimNotify
 	GENERATED_BODY()
 
 public:
-
 };

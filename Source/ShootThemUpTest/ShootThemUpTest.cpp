@@ -1,6 +1,4 @@
-
-
 #include "ShootThemUpTest.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, ShootThemUpTest, "ShootThemUpTest" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, ShootThemUpTest, "ShootThemUpTest");

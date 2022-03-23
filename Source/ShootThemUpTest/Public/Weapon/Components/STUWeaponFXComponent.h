@@ -15,7 +15,7 @@ class SHOOTTHEMUPTEST_API USTUWeaponFXComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	USTUWeaponFXComponent();
 
@@ -26,8 +26,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    FImpactData DefaultImpactData;
+	FImpactData DefaultImpactData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    TMap<UPhysicalMaterial*, FImpactData> ImpactDataMap;
+	TMap<UPhysicalMaterial*, FImpactData> ImpactDataMap;
 };

@@ -1,6 +1,5 @@
 // I will find u. Copyrighted
 
-
 #include "UI/STUPlayerHUDWidget.h"
 #include "STUUtils.h"
 
@@ -9,60 +8,57 @@
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
-    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
-    if (!HealthComponent) return 0.0f;
+	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+	if(!HealthComponent) return 0.0f;
 
-    return HealthComponent->GetHealthPercent();
+	return HealthComponent->GetHealthPercent();
 }
 
 bool USTUPlayerHUDWidget::GetWeaponUIdata(FWeaponUIData& WeaponUIData) const
 {
-    const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
-    ;
-    if (!WeaponComponent) return false;
+	const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());;
+	if(!WeaponComponent) return false;
 
-    return WeaponComponent->GetWeaponUIData(WeaponUIData);
+	return WeaponComponent->GetWeaponUIData(WeaponUIData);
 }
 
 bool USTUPlayerHUDWidget::GetWeaponAmmoData(FAmmoData& AmmoData) const
 {
-    const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
-    if (!WeaponComponent) return false;
+	const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
+	if(!WeaponComponent) return false;
 
-    return WeaponComponent->GetWeaponAmmoData(AmmoData);
+	return WeaponComponent->GetWeaponAmmoData(AmmoData);
 }
 
 bool USTUPlayerHUDWidget::IsPlayerAlive() const
 {
-    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
 
-    return HealthComponent && !HealthComponent->IsDead();
+	return HealthComponent && !HealthComponent->IsDead();
 }
-
 
 bool USTUPlayerHUDWidget::IsPlayerSpectating() const
 {
-    const auto PlayerController = GetOwningPlayer();
-    
+	const auto PlayerController = GetOwningPlayer();
 
-    return PlayerController && (PlayerController->GetStateName() == NAME_Spectating);
+	return PlayerController && (PlayerController->GetStateName() == NAME_Spectating);
 }
 
 bool USTUPlayerHUDWidget::Initialize()
 {
-    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
-    if (HealthComponent)
-    {
-        HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
-    }
+	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+	if(HealthComponent)
+	{
+		HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
+	}
 
-    return Super::Initialize();
+	return Super::Initialize();
 }
 
 void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
 {
-    if (HealthDelta < 0)
-    {
-        OnTakeDamage();
-    }
+	if(HealthDelta < 0)
+	{
+		OnTakeDamage();
+	}
 }

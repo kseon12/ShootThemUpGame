@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,8 +10,7 @@
 UCLASS()
 class SHOOTTHEMUPTEST_API ASTUGameModeBase : public AGameModeBase
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 public:
-
-    ASTUGameModeBase();
+	ASTUGameModeBase();
 };

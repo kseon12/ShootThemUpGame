@@ -13,5 +13,4 @@ UCLASS()
 class SHOOTTHEMUPTEST_API ASTUPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
 };
