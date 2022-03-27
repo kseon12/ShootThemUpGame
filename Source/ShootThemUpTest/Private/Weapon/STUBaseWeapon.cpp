@@ -10,7 +10,11 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
+/////////////////////////////////////////////////////////////////////////////////
+
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
+
+/////////////////////////////////////////////////////////////////////////////////
 
 // Sets default values
 ASTUBaseWeapon::ASTUBaseWeapon()
@@ -22,6 +26,8 @@ ASTUBaseWeapon::ASTUBaseWeapon()
 	SetRootComponent(WeaponMesh);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 // Called when the game starts or when spawned
 void ASTUBaseWeapon::BeginPlay()
 {
@@ -32,6 +38,8 @@ void ASTUBaseWeapon::BeginPlay()
 	checkf(DefaultAmmo.Clips > 0, TEXT("DefaultAmmo.Clips can't be ZERO or less"));
 	CurrentAmmo = DefaultAmmo;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void ASTUBaseWeapon::MakeShot()
 {
@@ -58,6 +66,8 @@ void ASTUBaseWeapon::MakeShot()
 	}*/
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
 {
 	const auto Player = Cast<ACharacter>(GetOwner());
@@ -66,19 +76,37 @@ APlayerController* ASTUBaseWeapon::GetPlayerController() const
 	return Player->GetController<APlayerController>();
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
-	const auto PlayerController = GetPlayerController();
-	if(!PlayerController) return false;
+	const auto STUCharacter = Cast<ACharacter>(GetOwner());
+	if(!STUCharacter) return false;
 
-	PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
+	if(STUCharacter->IsPlayerControlled())
+	{
+		const auto PlayerController = GetPlayerController();
+		if(!PlayerController) return false;
+
+		PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
+	}
+	else
+	{
+		ViewLocation = GetMuzzleWorldLocation();
+		ViewRotation = WeaponMesh->GetSocketRotation(MuzzleFlashSocketName);
+	}
+
 	return true;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
 {
 	return WeaponMesh->GetSocketLocation(MuzzleFlashSocketName);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 {
@@ -93,6 +121,8 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 	return true;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
 {
 	if(!GetWorld()) return;
@@ -104,15 +134,21 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
 	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Camera, CollisionQueryParams);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void ASTUBaseWeapon::StartFire()
 {
 	UE_LOG(LogBaseWeapon, Warning, TEXT("BaseWeapon->StartFire"));
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void ASTUBaseWeapon::StopFire()
 {
 	UE_LOG(LogBaseWeapon, Warning, TEXT("BaseWeapon->StopFire"));
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void ASTUBaseWeapon::DecreaseAmmo()
 {
@@ -131,15 +167,21 @@ void ASTUBaseWeapon::DecreaseAmmo()
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool ASTUBaseWeapon::IsAmmoEmpty() const
 {
 	return !CurrentAmmo.bInfinite && CurrentAmmo.Clips == 0 && IsClipEmpty();
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool ASTUBaseWeapon::IsClipEmpty() const
 {
 	return CurrentAmmo.Bullets == 0;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void ASTUBaseWeapon::ChangeClip()
 {
@@ -156,15 +198,21 @@ void ASTUBaseWeapon::ChangeClip()
 	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool ASTUBaseWeapon::CanReload() const
 {
 	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.Clips > 0;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool ASTUBaseWeapon::IsAmmoFull() const
 {
 	return CurrentAmmo.Clips == DefaultAmmo.Clips && CurrentAmmo.Bullets == DefaultAmmo.Bullets;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
 {
@@ -176,6 +224,8 @@ UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
 		FRotator::ZeroRotator,
 		EAttachLocation::SnapToTarget, true);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 {
@@ -206,3 +256,5 @@ bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 
 	return true;
 }
+
+/////////////////////////////////////////////////////////////////////////////////

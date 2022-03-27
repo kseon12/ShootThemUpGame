@@ -8,7 +8,11 @@
 
 #include "GameFramework/Character.h"
 
+/////////////////////////////////////////////////////////////////////////////////
+
 DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All)
+
+/////////////////////////////////////////////////////////////////////////////////
 
 USTUWeaponComponent::USTUWeaponComponent()
 {
@@ -16,6 +20,8 @@ USTUWeaponComponent::USTUWeaponComponent()
 
 	// ...
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 // Called when the game starts
 void USTUWeaponComponent::BeginPlay()
@@ -28,6 +34,8 @@ void USTUWeaponComponent::BeginPlay()
 	SpawnWeapons();
 	EquipWeapon(CurrentWeaponIndex);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -42,6 +50,8 @@ void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	Super::EndPlay(EndPlayReason);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::SpawnWeapons()
 {
@@ -62,6 +72,8 @@ void USTUWeaponComponent::SpawnWeapons()
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::StartFire()
 {
 	if(!CanFire()) return;
@@ -69,12 +81,16 @@ void USTUWeaponComponent::StartFire()
 	CurrentWeapon->StartFire();
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::StopFire()
 {
 	if(!CurrentWeapon) return;
 
 	CurrentWeapon->StopFire();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::NextWeapon()
 {
@@ -85,10 +101,14 @@ void USTUWeaponComponent::NextWeapon()
 	EquipWeapon(CurrentWeaponIndex);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::Reload()
 {
 	ChangeClip();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& Name)
 {
@@ -97,6 +117,8 @@ void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneCom
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
 	Weapon->AttachToComponent(SceneComponent, AttachmentRules, Name);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 {
@@ -123,6 +145,8 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 	PlayAnimMontage(EquipAnimMontage);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 {
 	const auto Owner = Cast<ACharacter>(GetOwner());
@@ -130,6 +154,8 @@ void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 
 	Owner->PlayAnimMontage(Animation);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::InitAnimations()
 {
@@ -157,6 +183,8 @@ void USTUWeaponComponent::InitAnimations()
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
 {
 	const auto Owner = Cast<ACharacter>(GetOwner());
@@ -166,6 +194,8 @@ void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
 	UE_LOG(LogWeaponComponent, Display, TEXT("Equip finished"));
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent)
 {
 	const auto Owner = Cast<ACharacter>(GetOwner());
@@ -174,15 +204,21 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent
 	bReloadAnimInProgress = false;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUWeaponComponent::CanFire() const
 {
 	return CurrentWeapon && !bEquipAnimInProgress && !bReloadAnimInProgress;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUWeaponComponent::CanEquip() const
 {
 	return !bEquipAnimInProgress && !bReloadAnimInProgress;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool USTUWeaponComponent::CanReload() const
 {
@@ -191,6 +227,8 @@ bool USTUWeaponComponent::CanReload() const
 		&& !bReloadAnimInProgress
 		&& CurrentWeapon->CanReload();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUWeaponComponent::OnEmpryClip(ASTUBaseWeapon* AmmoEmptyWeapon)
 {
@@ -212,6 +250,8 @@ void USTUWeaponComponent::OnEmpryClip(ASTUBaseWeapon* AmmoEmptyWeapon)
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUWeaponComponent::ChangeClip()
 {
 	if(!CanReload()) return;
@@ -221,6 +261,8 @@ void USTUWeaponComponent::ChangeClip()
 	bReloadAnimInProgress = true;
 	PlayAnimMontage(CurrentReloadAnimMontage);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& WeaponUIData) const
 {
@@ -233,6 +275,8 @@ bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& WeaponUIData) const
 	return false;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUWeaponComponent::GetWeaponAmmoData(FAmmoData& AmmoData) const
 {
 	if(CurrentWeapon)
@@ -243,6 +287,8 @@ bool USTUWeaponComponent::GetWeaponAmmoData(FAmmoData& AmmoData) const
 
 	return false;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount)
 {
@@ -256,3 +302,20 @@ bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, i
 
 	return false;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+bool USTUWeaponComponent::NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType)
+{
+	for(const auto Weapon : Weapons)
+	{
+		if(Weapon && Weapon->IsA(WeaponType))
+		{
+			return Weapon->IsAmmoFull();
+		}
+	}
+
+	return false;
+}
+
+/////////////////////////////////////////////////////////////////////////////////

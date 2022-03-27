@@ -49,6 +49,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUWeaponComponent* WeaponComponent;
 
+	virtual void OnDeath();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,7 +73,7 @@ private:
 	bool bWantsToRun = false;
 	bool bIsMovingForward = false;
 
-	void OnDeath();
+	
 	void OnHealthChanged(float Health, float HealthDelta);
 
 	UFUNCTION()

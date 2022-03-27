@@ -4,7 +4,11 @@
 
 #include "Components/SphereComponent.h"
 
+/////////////////////////////////////////////////////////////////////////////////
+
 DEFINE_LOG_CATEGORY_STATIC(LogBasePickup, All, All);
+
+/////////////////////////////////////////////////////////////////////////////////
 
 // Sets default values
 ASTUBasePickup::ASTUBasePickup()
@@ -19,6 +23,8 @@ ASTUBasePickup::ASTUBasePickup()
 	SetRootComponent(CollisionComponent);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 // Called when the game starts or when spawned
 void ASTUBasePickup::BeginPlay()
 {
@@ -28,6 +34,8 @@ void ASTUBasePickup::BeginPlay()
 	GenerateRotationYaw();
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 // Called every frame
 void ASTUBasePickup::Tick(float DeltaTime)
 {
@@ -35,6 +43,15 @@ void ASTUBasePickup::Tick(float DeltaTime)
 
 	AddActorLocalRotation(FRotator(0.0f, RotationYaw, 0.0f));
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+bool ASTUBasePickup::CouldBeTaken() const
+{
+	return GetWorldTimerManager().IsTimerActive(RespawnTimerHandle);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 {
@@ -47,14 +64,17 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void ASTUBasePickup::PickupWasTaken()
 {
 	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	GetRootComponent()->SetVisibility(false, true);
 
-	FTimerHandle RespawnTimerHandle;
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void ASTUBasePickup::Respawn()
 {
@@ -63,13 +83,19 @@ void ASTUBasePickup::Respawn()
 	GetRootComponent()->SetVisibility(true, true);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool ASTUBasePickup::GivePickupTo(APawn* PlayerPawn)
 {
 	return false;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void ASTUBasePickup::GenerateRotationYaw()
 {
 	const auto Direction = FMath::RandBool() ? 1.0f : -1.0f;
 	RotationYaw = FMath::RandRange(1.0f, 2.0f) * Direction;
 }
+
+/////////////////////////////////////////////////////////////////////////////////
