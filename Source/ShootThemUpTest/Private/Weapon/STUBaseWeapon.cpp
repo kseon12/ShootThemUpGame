@@ -44,36 +44,6 @@ void ASTUBaseWeapon::BeginPlay()
 void ASTUBaseWeapon::MakeShot()
 {
 	UE_LOG(LogBaseWeapon, Display, TEXT("Weapon %s shot calculation"), *GetName());
-
-	/*if (!GetWorld()) return;
-
-	FVector TraceStart, TraceEnd;
-	if (!GetTraceData(TraceStart, TraceEnd)) return;
-
-	FHitResult HitResult;
-	MakeHit(HitResult, TraceStart, TraceEnd);
-
-	if (HitResult.bBlockingHit)
-	{
-		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
-
-		MakeDamage(HitResult);
-	}
-	else
-	{
-		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
-	}*/
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-
-APlayerController* ASTUBaseWeapon::GetPlayerController() const
-{
-	const auto Player = Cast<ACharacter>(GetOwner());
-	if(!Player) return nullptr;
-
-	return Player->GetController<APlayerController>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +55,7 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 
 	if(STUCharacter->IsPlayerControlled())
 	{
-		const auto PlayerController = GetPlayerController();
+		const auto PlayerController = STUCharacter->GetController<APlayerController>();
 		if(!PlayerController) return false;
 
 		PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);

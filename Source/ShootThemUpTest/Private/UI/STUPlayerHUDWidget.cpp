@@ -6,6 +6,8 @@
 #include "Components/STUHealthComponent.h"
 #include "Components/STUWeaponComponent.h"
 
+/////////////////////////////////////////////////////////////////////////////////
+
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
 	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
@@ -13,6 +15,8 @@ float USTUPlayerHUDWidget::GetHealthPercent() const
 
 	return HealthComponent->GetHealthPercent();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool USTUPlayerHUDWidget::GetWeaponUIdata(FWeaponUIData& WeaponUIData) const
 {
@@ -22,6 +26,8 @@ bool USTUPlayerHUDWidget::GetWeaponUIdata(FWeaponUIData& WeaponUIData) const
 	return WeaponComponent->GetWeaponUIData(WeaponUIData);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUPlayerHUDWidget::GetWeaponAmmoData(FAmmoData& AmmoData) const
 {
 	const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
@@ -30,12 +36,16 @@ bool USTUPlayerHUDWidget::GetWeaponAmmoData(FAmmoData& AmmoData) const
 	return WeaponComponent->GetWeaponAmmoData(AmmoData);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUPlayerHUDWidget::IsPlayerAlive() const
 {
 	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
 
 	return HealthComponent && !HealthComponent->IsDead();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 bool USTUPlayerHUDWidget::IsPlayerSpectating() const
 {
@@ -44,16 +54,20 @@ bool USTUPlayerHUDWidget::IsPlayerSpectating() const
 	return PlayerController && (PlayerController->GetStateName() == NAME_Spectating);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUPlayerHUDWidget::Initialize()
 {
-	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
-	if(HealthComponent)
+	if(GetOwningPlayer())
 	{
-		HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
+		GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &USTUPlayerHUDWidget::OnNewPawn);
+		OnNewPawn(GetOwningPlayerPawn()); 
 	}
 
 	return Super::Initialize();
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
 {
@@ -62,3 +76,16 @@ void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
 		OnTakeDamage();
 	}
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+void USTUPlayerHUDWidget::OnNewPawn(APawn* Pawn)
+{
+	const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(Pawn);
+	if(HealthComponent && !HealthComponent->OnHealthChanged.IsBoundToObject(this))
+	{
+		HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////

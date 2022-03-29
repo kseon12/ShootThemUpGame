@@ -1,12 +1,18 @@
 // I will find u. Copyrighted
 
 #include "Components/STUHealthComponent.h"
+#include "STUGameModeBase.h"
+
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Controller.h"
 #include "Camera/CameraShakeBase.h"
 #include "TimerManager.h"
 
+/////////////////////////////////////////////////////////////////////////////////
+
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent, All, All)
+
+/////////////////////////////////////////////////////////////////////////////////
 
 // Sets default values for this component's properties
 USTUHealthComponent::USTUHealthComponent()
@@ -18,6 +24,8 @@ USTUHealthComponent::USTUHealthComponent()
 	// ...
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
 	AActor* DamageCauser)
 {
@@ -28,6 +36,7 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 
 	if(IsDead())
 	{
+		Killed(InstigatedBy);
 		OnDeath.Broadcast();
 	}
 	else if(bAutoHeal)
@@ -39,6 +48,8 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 	PlayCameraShake();
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUHealthComponent::AutoHealUpdate()
 {
 	SetHealth(Health + AutoHealModifier);
@@ -49,14 +60,18 @@ void USTUHealthComponent::AutoHealUpdate()
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 void USTUHealthComponent::SetHealth(float Value)
 {
 	const auto NextHealth = FMath::Clamp(Value, 0.0f, MaxHealth);
 	const auto HealthDelta = NextHealth - Health;
 
 	Health = NextHealth;
-	OnHealthChanged.Broadcast(Health, NextHealth);
+	OnHealthChanged.Broadcast(Health, HealthDelta);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void USTUHealthComponent::PlayCameraShake()
 {
@@ -70,6 +85,21 @@ void USTUHealthComponent::PlayCameraShake()
 
 	Controller->PlayerCameraManager->StartCameraShake(CameraShake);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
+void USTUHealthComponent::Killed(AController* KillerController)
+{
+	const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
+	if(!GameMode) return;
+
+	const auto Player = Cast<APawn>(GetOwner());
+	const auto VictimController = Player ? Player->Controller : nullptr;
+
+	GameMode->Killed(KillerController,VictimController);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 
 // Called when the game starts
 void USTUHealthComponent::BeginPlay()
@@ -85,6 +115,8 @@ void USTUHealthComponent::BeginPlay()
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 float USTUHealthComponent::GetHealthPercent() const
 {
 	if(MaxHealth <= 0)
@@ -96,6 +128,8 @@ float USTUHealthComponent::GetHealthPercent() const
 	return Health / MaxHealth;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
 {
 	if(IsDead() || IsHealthFull()) return false;
@@ -104,7 +138,11 @@ bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
 	return true;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+
 bool USTUHealthComponent::IsHealthFull() const
 {
 	return FMath::IsNearlyEqual(Health, MaxHealth);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
