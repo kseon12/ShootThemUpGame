@@ -8,7 +8,6 @@
 #include "GameFramework/Character.h"
 #include "STUBaseCharacter.generated.h"
 
-
 class USTUHealthComponent;
 class UTextRenderComponent;
 class USTUWeaponComponent;
@@ -31,7 +30,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UTextRenderComponent* HealthTextComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* DeathAnimMontage;
 
@@ -48,6 +47,7 @@ protected:
 	FName MaterialColorName = "Paint Color";
 
 	virtual void OnDeath();
+	virtual void OnHealthChanged(float Health, float HealthDelta);
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -60,8 +60,6 @@ public:
 	void SetPlayerColor(const FLinearColor& LinearColor);
 
 private:
-	void OnHealthChanged(float Health, float HealthDelta);
-
 	UFUNCTION()
 	void OnGroundLanded(const FHitResult& Hit);
 protected:

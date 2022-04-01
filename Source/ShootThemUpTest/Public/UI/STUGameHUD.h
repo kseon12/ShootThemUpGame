@@ -7,6 +7,7 @@
 #include "STUCoreTypes.h"
 #include "STUGameHUD.generated.h"
 
+class USTUBaseWidget;
 /**
  * 
  */
@@ -23,15 +24,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> PauseWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
+
 	virtual void BeginPlay() override;
 
 private:
 	void OnMatchStateChanged(ESTUMatchState State);
 
 	UPROPERTY()
-	TMap<ESTUMatchState, UUserWidget*> GameWidgets;
+	TMap<ESTUMatchState, USTUBaseWidget*> GameWidgets;
 
 	UPROPERTY()
-	UUserWidget* CurrentWidget = nullptr;
+	USTUBaseWidget* CurrentWidget = nullptr;
 
 };

@@ -92,6 +92,18 @@ bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDel
 
 /////////////////////////////////////////////////////////////////////////////////
 
+bool ASTUGameModeBase::ClearPause()
+{
+	const auto PauseCleared = Super::ClearPause();
+	if(PauseCleared)
+	{
+		SetMatchState(ESTUMatchState::InProgress);
+	}
+	return PauseCleared;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
 void ASTUGameModeBase::SpawnBots()
 {
 	if(!GetWorld()) return;
@@ -182,6 +194,7 @@ void ASTUGameModeBase::CreateTeamsInfo()
 
 		PlayerState->SetTeamID(TeamID);
 		PlayerState->SetTeamColor(DetermineColorByTeamID(TeamID));
+		PlayerState->SetPlayerName(Controller->IsPlayerController() ? "Player": "Bot");
 		SetPlayerColor(Controller);
 		TeamID = TeamID == 1 ? 2 : 1;
 	}
