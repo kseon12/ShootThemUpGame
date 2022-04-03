@@ -3,6 +3,9 @@
 #include "Weapon/STULauncherWeapon.h"
 #include "Weapon/STUProjectile.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogLauncherWeapon, All, All);
 
 void ASTULauncherWeapon::StartFire()
@@ -14,8 +17,9 @@ void ASTULauncherWeapon::MakeShot()
 {
 	UE_LOG(LogLauncherWeapon, Display, TEXT("Weapon %s shot calculation"), *GetName());
 
-	if(!GetWorld() || IsAmmoEmpty())
+	if(IsAmmoEmpty())
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), NoAmmoSoundCue,GetActorLocation());
 		StopFire();
 		return;
 	}
@@ -44,4 +48,6 @@ void ASTULauncherWeapon::MakeShot()
 
 	DecreaseAmmo();
 	SpawnMuzzleFX();
+
+	UGameplayStatics::SpawnSoundAttached(FireSoundCue, WeaponMesh, MuzzleFlashSocketName);
 }

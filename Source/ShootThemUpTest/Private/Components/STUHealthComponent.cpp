@@ -3,10 +3,14 @@
 #include "Components/STUHealthComponent.h"
 #include "STUGameModeBase.h"
 
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
 #include "Camera/CameraShakeBase.h"
 #include "TimerManager.h"
+
+#include "Perception/AISense_Damage.h"
+
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -29,23 +33,7 @@ USTUHealthComponent::USTUHealthComponent()
 void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
 	AActor* DamageCauser)
 {
-	if(Damage <= 0.0f || IsDead() || !GetWorld()) return;
-	SetHealth(Health - Damage);
 
-	GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
-
-	if(IsDead())
-	{
-		Killed(InstigatedBy);
-		OnDeath.Broadcast();
-	}
-	else if(bAutoHeal)
-	{
-		GetWorld()->GetTimerManager().SetTimer(
-			AutoHealTimerHandle, this, &USTUHealthComponent::AutoHealUpdate, AutoHealUpdateTime, true, AutoHealStartDelay);
-	}
-
-	PlayCameraShake();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +89,51 @@ void USTUHealthComponent::Killed(AController* KillerController)
 
 /////////////////////////////////////////////////////////////////////////////////
 
+void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy)
+{
+	if(Damage <= 0.0f || IsDead() || !GetWorld()) return;
+	SetHealth(Health - Damage);
+
+	GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
+
+	if(IsDead())
+	{
+		Killed(InstigatedBy);
+		OnDeath.Broadcast();
+	}
+	else if(bAutoHeal)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			AutoHealTimerHandle, this, &USTUHealthComponent::AutoHealUpdate, AutoHealUpdateTime, true, AutoHealStartDelay);
+	}
+
+	PlayCameraShake();
+
+	ReportDamageEvent(Damage,InstigatedBy);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+float USTUHealthComponent::GetPointDamageModifier(AActor* DamagedActor, const FName& BoneName)
+{
+	const auto Character =Cast<ACharacter>(DamagedActor);
+	if(!Character) return 1.0f;
+
+	const auto PhysMaterial= Character->GetMesh()->GetBodyInstance(BoneName)->GetSimplePhysicalMaterial();
+	if(!DamageModifiers.Contains(PhysMaterial)) return 1.0f;
+
+	return DamageModifiers[PhysMaterial];
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+void USTUHealthComponent::ReportDamageEvent(float Damage, AController* InstigatedBy)
+{
+	UAISense_Damage::ReportDamageEvent(GetWorld(), GetOwner(),InstigatedBy->GetPawn(),Damage, InstigatedBy->GetPawn()->GetActorLocation(),GetOwner()->GetActorLocation());
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
 // Called when the game starts
 void USTUHealthComponent::BeginPlay()
 {
@@ -112,6 +145,8 @@ void USTUHealthComponent::BeginPlay()
 	if(ComponentOwner)
 	{
 		ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamage);
+		ComponentOwner->OnTakePointDamage.AddDynamic(this, &USTUHealthComponent::OnTakePointDamage);
+		ComponentOwner->OnTakeRadialDamage.AddDynamic(this, &USTUHealthComponent::OnTakeRadialDamage);
 	}
 }
 
@@ -143,6 +178,21 @@ bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
 bool USTUHealthComponent::IsHealthFull() const
 {
 	return FMath::IsNearlyEqual(Health, MaxHealth);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+void USTUHealthComponent::OnTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
+{
+	const auto FinalDamage = Damage * GetPointDamageModifier(DamagedActor,BoneName);
+	ApplyDamage(FinalDamage,InstigatedBy);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+void USTUHealthComponent::OnTakeRadialDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, FVector Origin, FHitResult HitInfo, AController* InstigatedBy, AActor* DamageCauser)
+{
+	ApplyDamage(Damage,InstigatedBy);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

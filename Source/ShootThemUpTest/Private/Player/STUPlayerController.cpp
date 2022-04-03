@@ -2,8 +2,10 @@
 
 #include "Player/STUPlayerController.h"
 #include "STUGameModeBase.h"
+#include "STUGameInstance.h"
 
 #include "Components/STURespawnComponent.h"
+
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +42,7 @@ void ASTUPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	InputComponent->BindAction("PauseGame", IE_Pressed, this, &ASTUPlayerController::OnPauseGame);
+	InputComponent->BindAction("Mute",IE_Pressed,this,&ASTUPlayerController::OnMuteSound);
 
 }
 
@@ -64,6 +67,14 @@ void ASTUPlayerController::OnMatchStateChanged(ESTUMatchState State)
 		SetInputMode(FInputModeUIOnly());
 		bShowMouseCursor = true;
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+void ASTUPlayerController::OnMuteSound()
+{
+	const auto STUGameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
+	STUGameInstance->ToggleVolume();
 }
 
 /////////////////////////////////////////////////////////////////////////////////

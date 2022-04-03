@@ -11,6 +11,7 @@
 class USTUHealthComponent;
 class UTextRenderComponent;
 class USTUWeaponComponent;
+class USoundCue;
 
 UCLASS()
 class SHOOTTHEMUPTEST_API ASTUBaseCharacter : public ACharacter
@@ -45,6 +46,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Material")
 	FName MaterialColorName = "Paint Color";
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	USoundCue* DeathSoundCue;
 
 	virtual void OnDeath();
 	virtual void OnHealthChanged(float Health, float HealthDelta);

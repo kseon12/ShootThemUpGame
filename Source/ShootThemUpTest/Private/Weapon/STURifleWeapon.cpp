@@ -6,12 +6,16 @@
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "KIsmet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
 
 ASTURifleWeapon::ASTURifleWeapon()
 {
 	WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
+
 }
 
 void ASTURifleWeapon::StartFire()
@@ -29,6 +33,21 @@ void ASTURifleWeapon::StopFire()
 
 	GetWorldTimerManager().ClearTimer(ShotTimerHandle);
 	SetMuzzleFXVisibility(false);
+}
+
+void ASTURifleWeapon::Zoom(bool Enabled)
+{
+	//Super::Zoom(Enabled);
+
+	const auto PlayerController = Cast<APlayerController>(GetController());
+	if(!PlayerController || !PlayerController->PlayerCameraManager ) return;
+
+	if(Enabled)
+	{
+		DefaultCameraPOV= PlayerController->PlayerCameraManager->GetFOVAngle();
+	}
+	
+	PlayerController->PlayerCameraManager->SetFOV(Enabled? FOVZoomAngle: DefaultCameraPOV);
 }
 
 void ASTURifleWeapon::BeginPlay()
@@ -81,7 +100,9 @@ void ASTURifleWeapon::MakeDamage(FHitResult& HitResult)
 	auto DamagedCharacter = Cast<ASTUBaseCharacter>(HitResult.GetActor());
 	if(!DamagedCharacter) return;
 
-	DamagedCharacter->TakeDamage(DamageAmount, FDamageEvent(), GetController(), this);
+	FPointDamageEvent PointDamageEvent;
+	PointDamageEvent.HitInfo = HitResult;
+	DamagedCharacter->TakeDamage(DamageAmount, PointDamageEvent, GetController(), this);
 }
 
 void ASTURifleWeapon::InitMuzzleFX()
@@ -90,7 +111,10 @@ void ASTURifleWeapon::InitMuzzleFX()
 	{
 		MuzzleFXComponent = SpawnMuzzleFX();
 	}
-
+	if(!FireAudioComponent)
+	{
+		FireAudioComponent = UGameplayStatics::SpawnSoundAttached(FireSoundCue,WeaponMesh, MuzzleFlashSocketName);
+	}
 	SetMuzzleFXVisibility(true);
 }
 
@@ -100,6 +124,11 @@ void ASTURifleWeapon::SetMuzzleFXVisibility(bool Value)
 	{
 		MuzzleFXComponent->SetPaused(!Value);
 		MuzzleFXComponent->SetVisibility(Value, true);
+	}
+
+	if(FireAudioComponent)
+	{
+		Value ? FireAudioComponent->Play() : FireAudioComponent->Stop();
 	}
 }
 

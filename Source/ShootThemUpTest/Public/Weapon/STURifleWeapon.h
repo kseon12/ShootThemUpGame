@@ -20,6 +20,7 @@ public:
 
 	virtual void StartFire() override;
 	virtual void StopFire() override;
+	virtual void Zoom(bool Enabled) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,6 +48,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
 	FString TraceTargetName = "TraceTarget";
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	float FOVZoomAngle =50.0f;
+
 private:
 	FTimerHandle ShotTimerHandle;
 
@@ -54,6 +58,11 @@ private:
 
 	UPROPERTY()
 	UNiagaraComponent* MuzzleFXComponent;
+
+	UPROPERTY()
+	UAudioComponent* FireAudioComponent;
+
+	float DefaultCameraPOV = 90.0f;
 
 	void InitMuzzleFX();
 	void SetMuzzleFXVisibility(bool Value);
