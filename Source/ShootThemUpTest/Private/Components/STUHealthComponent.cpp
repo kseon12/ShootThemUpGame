@@ -129,6 +129,7 @@ float USTUHealthComponent::GetPointDamageModifier(AActor* DamagedActor, const FN
 
 void USTUHealthComponent::ReportDamageEvent(float Damage, AController* InstigatedBy)
 {
+	if(!InstigatedBy) return;
 	UAISense_Damage::ReportDamageEvent(GetWorld(), GetOwner(),InstigatedBy->GetPawn(),Damage, InstigatedBy->GetPawn()->GetActorLocation(),GetOwner()->GetActorLocation());
 }
 

@@ -12,7 +12,7 @@ public class ShootThemUpTestEditorTarget : TargetRules
 
 		ExtraModuleNames.AddRange( new string[] { "ShootThemUpTest" } );
 
-		bCompileChaos = true;
-		bUseChaos = true;
+		//bCompileChaos = true;
+		//bUseChaos = true;
 	}
 }
